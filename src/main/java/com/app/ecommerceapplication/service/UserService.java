@@ -1,12 +1,13 @@
 package com.app.ecommerceapplication.service;
 import com.app.ecommerceapplication.dto.AddressDTO;
+import com.app.ecommerceapplication.dto.UserRequest;
 import com.app.ecommerceapplication.dto.UserResponse;
+import com.app.ecommerceapplication.model.Address;
 import com.app.ecommerceapplication.repository.UserRepository;
 import com.app.ecommerceapplication.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,39 +17,55 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-//    private List<User> userList = new ArrayList<>();
-//    private Long nextId = 1L;
-
 
     //list all users
     public List<UserResponse> fetchAllUser(){
-        return userRepository.findAll().stream().map(this::mapToUserResponse).collect(Collectors.toList());
+        return userRepository.findAll().stream()
+                .map(this::mapToUserResponse)
+                .collect(Collectors.toList());
     }
 
     //add user
-    public void addUser(User user){
+    public void addUser(UserRequest userRequest){
+        User user = new User();
+        updateUserFromRequest(user, userRequest);
         userRepository.save(user);
     }
 
-    //fetch user using java stream
-    public Optional<User> fetchUser(Long id) {
-//        return userList.stream()
-//                .filter(user -> user.getId().equals(id))
-//                .findFirst();
-            return userRepository.findById(id);
+    //user request to update data
+    private void updateUserFromRequest(User user, UserRequest userRequest) {
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
+        user.setEmail((userRequest.getEmail()));
+        user.setPhone(userRequest.getPhone());
+        if(userRequest.getAddress() != null){
+            Address address = new Address();
+            address.setStreet(userRequest.getAddress().getStreet());
+            address.setZipcode(userRequest.getAddress().getZipcode());
+            address.setCity(userRequest.getAddress().getCity());
+            address.setCountry(userRequest.getAddress().getCountry());
+            address.setState(userRequest.getAddress().getState());
+            user.setAddress(address);
+        }
+    }
+
+    //fetch user using java stream, optional to avoid null exception
+    public Optional<UserResponse> fetchUser(Long id) {
+            return userRepository.findById(id)
+                    .map(this::mapToUserResponse);
     }
 
     //update detail of user
-    public boolean updateUser(Long id, User updatedUser) {
+    public boolean updateUser(Long id, UserRequest updatedUserRequest) {
             return userRepository.findById(id)
                     .map(existingUser -> {
-                        existingUser.setFirstName(updatedUser.getFirstName());
-                        existingUser.setLastName(updatedUser.getLastName());
+                        updateUserFromRequest(existingUser, updatedUserRequest);
                         userRepository.save(existingUser);
                         return true;
                     }).orElse(false);
     }
 
+    //mapping column values to user response type
     private UserResponse mapToUserResponse(User user){
         UserResponse response = new UserResponse();
         response.setId(String.valueOf(user.getId()));
