@@ -4,10 +4,13 @@ import com.app.ecommerceapplication.dto.ProductRequest;
 import com.app.ecommerceapplication.dto.ProductResponse;
 import com.app.ecommerceapplication.model.Product;
 import com.app.ecommerceapplication.repository.ProductRepository;
+import io.micrometer.observation.ObservationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,4 +60,26 @@ public class ProductService {
                 });
     }
 
+    //get products
+    public List<ProductResponse> getProducts() {
+        return productRepository.findByActiveTrue().stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    //search product
+    public List<ProductResponse> searchProduct(String keyword) {
+        return productRepository.searchProduct(keyword).stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    public boolean deleteProduct(Long id) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    product.setActive(false);
+                    productRepository.save(product);
+                    return true;
+                }).orElse(false);
+    }
 }
