@@ -6,7 +6,6 @@ import com.app.ecommerceapplication.service.CartService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +36,6 @@ public class CartController {
         return ResponseEntity.ok(cartService.getCart(userId));
     }
 
-
-    //UPDATE
     //DELETE
     @DeleteMapping("/items/{productId}")
     public ResponseEntity<Void> removeFromCart(

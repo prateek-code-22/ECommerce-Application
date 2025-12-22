@@ -4,7 +4,6 @@ import com.app.ecommerceapplication.dto.ProductRequest;
 import com.app.ecommerceapplication.dto.ProductResponse;
 import com.app.ecommerceapplication.model.Product;
 import com.app.ecommerceapplication.repository.ProductRepository;
-import io.micrometer.observation.ObservationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
