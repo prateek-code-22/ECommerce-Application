@@ -1,7 +1,6 @@
 package com.app.ecommerceapplication.controller;
 
 import com.app.ecommerceapplication.dto.CartItemRequest;
-import com.app.ecommerceapplication.model.CartItem;
 import com.app.ecommerceapplication.service.CartService;
 
 import lombok.RequiredArgsConstructor;
@@ -9,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,11 +28,7 @@ public class CartController {
 
 
     //GET
-    @GetMapping
-    public ResponseEntity<List<CartItem>>getCart(
-            @RequestHeader("X-User-ID") String userId) {
-        return ResponseEntity.ok(cartService.getCart(userId));
-    }
+
 
 
     //UPDATE

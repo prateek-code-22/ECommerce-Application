@@ -7,17 +7,14 @@ import com.app.ecommerceapplication.model.User;
 import com.app.ecommerceapplication.repository.CartItemRepository;
 import com.app.ecommerceapplication.repository.ProductRepository;
 import com.app.ecommerceapplication.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class CartService {
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
@@ -59,28 +56,19 @@ public class CartService {
 
     }
 
-    //delete item from cart
     public boolean deleteItemFromCart(String userId, Long productId) {
         Optional<Product> productOpt = productRepository.findById(productId);
+        if(productOpt.isEmpty()) return false;
+
         Optional<User> userOpt = userRepository.findById(Long.valueOf(userId));
+        if(userOpt.isEmpty()) return false;
 
-        //check if user present or not
-        if(productOpt.isPresent() && userOpt.isPresent()){
-            cartItemRepository.deleteByUserAndProduct(userOpt.get(), productOpt.get());
+        userOpt.flatMap(user ->
+        productOpt.map(product -> {
+            cartItemRepository.deleteByUserAndProduct(user, product);
             return true;
-        }
+        })
+        );
         return false;
-    }
-
-
-    public List<CartItem> getCart(String userId) {
-        return userRepository.findById(Long.valueOf(userId))
-                .map(cartItemRepository::findByUser)
-                .orElseGet(List::of);
-
-    }
-
-    public void clearCart(String userId){
-        userRepository.findById(Long.valueOf(userId)).ifPresent(cartItemRepository::deleteByUser);
     }
 }
