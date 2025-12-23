@@ -1,13 +1,26 @@
 spring:
   application:
     name: ECommerce-Application
-  h2:
-    console:
-      enabled: true
+
   datasource:
-    url: jdbc:h2:mem:test
+    url: jdbc:postgresql://localhost:5432/ecomdb
+    username: admin
+    password: root
   jpa:
+    database: POSTGRESQL
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+    database-platform: org.hibernate.dialet.PostgreSQLDiablect
 
+
+#  h2:
+#    console:
+#      enabled: true
+#  datasource:
+#    url: jdbc:h2:mem:test
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: create
+#
